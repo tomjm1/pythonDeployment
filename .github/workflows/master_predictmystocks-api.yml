@@ -11,7 +11,7 @@ on:
 
 jobs:
   build-and-deploy:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
@@ -19,21 +19,17 @@ jobs:
     - name: Set up Python version
       uses: actions/setup-python@v1
       with:
-        python-version: '3.6'
+        python-version: '3.8'
 
-    - name: Install Python dependencies
-      run: |
-        python -m venv env
-        .\env\Scripts\activate
-        pip install -r requirements.txt
-
-    - name: Zip the application files
-      run: Compress-Archive .\* app.zip
+    - name: Build using AppService-Build
+      uses: azure/appservice-build@v2
+      with:
+        platform: python
+        platform-version: '3.8'
 
     - name: 'Deploy to Azure Web App'
       uses: azure/webapps-deploy@v2
       with:
         app-name: 'predictmystocks-api'
         slot-name: 'production'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_7a57235698a14612b2a1e378607cb261 }}
-        package: '.\app.zip'
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_5d101f407df84e41be64cb9c71facd7d }}
